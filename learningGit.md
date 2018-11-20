@@ -64,23 +64,24 @@ no changes added to commit (use "git add" and/or "git commit -a")
 
 ​	通过`git diff `查看到底修改了什么：
 
-```vb
-$ git diff
-diff --git a/readme.md b/readme.md
-index b3e526a..0fa1c8f 100644
---- a/readme.md
-+++ b/readme.md
-@@ -1,4 +1,6 @@
- ```
- Git is a distributed version control system.
- Git is free software.
--```
-\ No newline at end of file
-+```
-+
-+       This is my readme.
-\ No newline at end of file
-```
++ ```vb
+  $ git diff
+  diff --git a/readme.md b/readme.md
+  index b3e526a..0fa1c8f 100644
+  --- a/readme.md
+  +++ b/readme.md
+  @@ -1,4 +1,6 @@
+  
+   Git is a distributed version control system.
+   Git is free software.
+  -```
+  \ No newline at end of file
+  +```
+  +
+  
+  - This is my readme.
+    \ No newline at end of file
+  ```
 
 ​	把readme.md`git add`后还可以再通过`git status`对仓库状态进行查看，可看到readme.md待提交；
 
@@ -166,5 +167,15 @@ eed607f HEAD@{5}: commit (initial): first commit
 
 ​	找到之前的所有流程
 
+### 2.2 工作区和暂存区
 
+​	工作区：就是自己对文件进行修改编辑的地区；也就是文件夹内
+
+​	暂存区：就是  `git add`命令之后文件存放的地区
+
+​		在创建Git版本库时，就仅仅创建了一个master分支，
+
+​	master分支：  `Git commit`命令就是把暂存区中的内容添加到master分支上。
+
+​	目前在这里看到master分支，也就是说之后能自己开辟自己的分支喽？
 
