@@ -83,7 +83,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
     \ No newline at end of file
   ```
 
-​	把readme.md`git add`后还可以再通过`git status`对仓库状态进行查看，可看到readme.md待提交；
+		把readme.md`git add`后还可以再通过`git status`对仓库状态进行查看，可看到readme.md待提交；
 
 ### 2.1 版本退回
 
@@ -116,7 +116,7 @@ Date:   Tue Nov 20 11:14:03 2018 +0800
     first commit
 ```
 
-​	嫌输出太多，可加上参数`--pretty=online`	
+​	嫌输出太多，可加上参数  `--pretty=online`	
 
 ```vb
 $ git log --pretty=oneline
@@ -130,7 +130,7 @@ eed607f98c488e016a0230b6bb97ac2fa934e04d first commit
 
 ​	
 
-​	要进行版本退回要使用的命令是   `git reset`;然后通过  `cat readme.md`查看
+​	要进行版本退回要使用的命令是     `git reset`;然后通过  `cat readme.md`查看
 
 ```vb
 $ git reset --hard HEAD^
@@ -173,9 +173,76 @@ eed607f HEAD@{5}: commit (initial): first commit
 
 ​	暂存区：就是  `git add`命令之后文件存放的地区
 
-​		在创建Git版本库时，就仅仅创建了一个master分支，
+​	版本库：在创建Git版本库时，就仅仅创建了一个master分支，
 
 ​	master分支：  `Git commit`命令就是把暂存区中的内容添加到master分支上。
 
 ​	目前在这里看到master分支，也就是说之后能自己开辟自己的分支喽？
+
+### 2.3 管理修改
+
+​	git的管理针对的是修改；所谓修改就是添加删除，只要对文件有改动都乐意算作修改。即使是创建了一个新文件也会算作是一次修改。
+
+​	于是添加到暂存区的也是修改，提交到分支上的也是修改。把一个修改添加到暂存区，再对这个文件进行修改，后边的这次修改没有被添加进去。通过状态查看还是有改动，需要再次添加。
+
+### 2.4 撤销修改
+
+​	再对一项进行修改后，要将其撤销。用git checkout -- file来将其撤销到最近一次git add或git commit后的状态。也就是刚修改完，还没添加或者提交，可以恢复修改
+
+```vb
+$ git checkout -- file	# "--"很重要，没有它命令是另外的意思。
+```
+
+​	要是不小心把错误修改的文件已经添加到了暂存库；需要撤销的命令是
+
+```vb
+$ git reset HEAD file
+```
+
+​	reset命令可以回退版本也可以把暂存区的修改退回到工作区。用HEAD表示最新的版本。这时再查看状态，暂存区是干净的，工作区有修改。那么即可使用上第一条命令进行修改清除。
+
+### 2.4 删除文件
+
+​	对一个文件的删除可以用linux中普通的删除命令，但是也要用git中的删除命令删除，并且提交。
+
+```vb
+$ git add test.txt
+$ git commit -m "add test.txt"
+[master bcd5447] add test.txt
+ 2 files changed, 1 insertion(+)
+ create mode 100644 test.txt
+$ rm test.txt
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   learningGit.md
+        deleted:    test.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+$ git rm test.txt
+rm 'test.txt'
+$ git commit -m "remove test.txt"
+[master 983a74a] remove test.txt
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 test.txt
+```
+
+## 3. 远程仓库
+
+​	可以把自己的代码克隆到远程库github当中去。需要的操作是在电脑与github间建立一个ssh 加密，让github知道某一次添加是你自己添加的。
+
+​	通过下面的这个命令生成一个ssh 密钥，生成一个私钥一个公钥；
+
+```vb
+$ ssh-keygen -t rsa -C "youremail@example.com"
+```
+
+​	然后登陆github，再setting中新建ssh把公钥的内容添加进去；
+
+​	当然可以在不同的电脑上添加不同ssh密钥。于是就可以共同和github协作。
+
+
 
