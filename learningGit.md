@@ -230,7 +230,7 @@ $ git commit -m "remove test.txt"
  delete mode 100644 test.txt
 ```
 
-## 3. 远程仓库
+## 三. 远程仓库
 
 ​	可以把自己的代码克隆到远程库github当中去。需要的操作是在电脑与github间建立一个ssh 加密，让github知道某一次添加是你自己添加的。
 
@@ -243,6 +243,37 @@ $ ssh-keygen -t rsa -C "youremail@example.com"
 ​	然后登陆github，再setting中新建ssh把公钥的内容添加进去；
 
 ​	当然可以在不同的电脑上添加不同ssh密钥。于是就可以共同和github协作。
+
+### 3.1 添加远程库
+
+​	在这一小节学习在github上建库。github上的库既可以往本地克隆，也可以把本地库与之关联。
+
+​	把本地库关联到远程库中的命令：
+
+```vb
+$ git remote add origin git@github.com:zenner006/gitskill.git
+
+# 上面这句有可能报错
+fatal: remote origin already exists.
+# 用下面这句来解决：
+$ git remote rm origin	# origin到底是一个怎样的存在呢？
+```
+
+​	接着把本地库所有内容推送都远程库中：
+
+```vb
+$ git push -u origin master
+```
+
+​	由于远程库是空的，我们第一次推送`master`分支时，加上了`-u`参数，Git不但会把本地的`master`分支内容推送的远程新的`master`分支，还会把本地的`master`分支和远程的`master`分支关联起来，在以后的推送或者拉取时就可以简化命令。 
+
+​	从现在起，只要本地作了提交，就可以通过命令： 
+
+```vb
+$ git push origin master
+```
+
+
 
 
 
