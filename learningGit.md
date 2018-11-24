@@ -283,9 +283,117 @@ $ git clone git@github.com:michaelliao/gitskills.git
 
 ​	clone后面的这部分地址在github上可以直接拿到
 
+## 四、分支管理
 
+​	分支管理就是合作时，把总线分开。一个在对文件做一件事，另一个对文件做另外一件事，最后将这两个分支可以整合到一起来。（还不是很理解为什么要这样子做）
+
+### 4.1 创建与合并分支
+
+​	Git里主分支叫做master。HEAD指向master。master是指向提交的的。所以HEAD指向得是当前分支。
+
+​	当创建新的分支，例如dev时，Git新建了一个指针叫dev，指向master相同的提交，再把HEAD指向dev，就表示当前分支在dev上。
+
+​	但在此之后，对工作区的修改和提交就是针对dev分支了，比如新提交一次后，dev指针往后移动一步，而master不变；
+
+​	在dev上的工作完成，把dev合并到master上。Git的合并就是把master直接指向dev的当前提交，完成合并。
+
+​	合并完成后，要删除dev分支，就直接把dev指针删除就可以。
 
 ​	
 
+​	创建dev分支，然后切换到dev分支:
 
+```vb
+$ git checkout -b dev
+Switched to a new branch 'dev'
+```
 
+​	`git checkout`命令加上`-b`参数表示创建并切换，相当于一下命令：
+
+```vb
+$ git branch dev	# 创建分支
+$ git checkout dev	# 切换分支
+Switched to branch 'dev'
+```
+
+​	在一个文件下进行改动，进行添加并提交后就提交到了dev分支。切换回master分支以后，
+
+```vb
+$ git checkout master
+Switched to branch 'master'
+```
+
+​	可以看到刚刚改动的不见了，也就是说，你新立了一个路径，但master很沉稳，他不为所动。除非你把已经改动的进行合并；
+
+```vb
+$ git merge dev
+Updating d46f35e..b17d20e
+Fast-forward
+ readme.txt | 1 +
+ 1 file changed, 1 insertion(+)
+```
+
+​	这里提示是fast-forward，就是直接改动指针，这样很快。
+
+​	然后可以删除分支：
+
+```vb
+$ git branch -d dev		# 删除分支
+Deleted branch dev (was b17d20e).
+$ git branch	# 查看分支
+* master
+```
+
+Git鼓励大量使用分支：
+
+查看分支：`git branch`
+
+创建分支：`git branch <name>`
+
+切换分支：`git checkout <name>`
+
+创建+切换分支：`git checkout -b <name>`
+
+合并某分支到当前分支：`git merge <name>`
+
+删除分支：`git branch -d <name>`
+
+### 4.2 解决冲突
+
+​	新建分支，修改文件并提交到该分支上。再在master分支上进行修改；
+
+![1543027370160](C:\Users\bingyi\AppData\Roaming\Typora\typora-user-images\1543027370160.png)
+
+​	于是就有上图的情况master和feature1都有新的提交，这种情况下无法直接合并两个分支，必须解决冲突。
+
+```vb
+$ git merge feature1
+Auto-merging readme.txt
+CONFLICT (content): Merge conflict in readme.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+​	然后需要在文件中手动修改冲突，得到最后版本后，进行提交这次也就是下图：
+
+![1543027692314](C:\Users\bingyi\AppData\Roaming\Typora\typora-user-images\1543027692314.png)
+
+​	用`git log`查看分支合并情况
+
+```vb
+$ git log --graph --pretty=oneline --abbrev-commit
+*   cf810e4 (HEAD -> master) conflict fixed
+|\  
+| * 14096d0 (feature1) AND simple
+* | 5dc6824 & simple
+|/  
+* b17d20e branch test
+* d46f35e (origin/master) remove test.txt
+* b84166e add test.txt
+* 519219b git tracks changes
+* e43a48b understand how stage works
+* 1094adb append GPL
+* e475afc add distributed
+* eaadf4e wrote a readme file
+```
+
+​	最后删除分支；
