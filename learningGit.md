@@ -273,7 +273,19 @@ $ git push -u origin master
 $ git push origin master
 ```
 
+### 3.2 从远程库克隆
 
+​	想要啥包，就从github上直接下
+
+```vb
+$ git clone git@github.com:michaelliao/gitskills.git
+```
+
+​	clone后面的这部分地址在github上可以直接拿到
+
+
+
+​	
 
 
 
