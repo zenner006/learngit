@@ -397,3 +397,118 @@ $ git log --graph --pretty=oneline --abbrev-commit
 ```
 
 ​	最后删除分支；
+
+### 4.3 分支管理策略
+
+​	Git用`Fast forward`模式下，删除分支，会丢掉分支信息。在强制禁用
+
+​	若是有了一个分支master，再创建一个分支dev。我们在dev下进行修改，如果把dev上的修改向master分支上进行合并，用`Fast forward`模式则会将dev分支消除掉。那么我们想要强制禁用`Fast forward`，也可以用`--no-ff -m`参数，表示禁用`Fast forward`
+
+```python
+$ git checkout -b dev	# 创建新的分支dev
+Switched to a new branch 'dev'
+
+$ git add readme.txt 	# 修改文件后进行提交
+$ git commit -m "add merge"
+[dev f52c633] add merge
+ 1 file changed, 1 insertion(+)
+    
+$ git checkout master	# 切回到master
+Switched to branch 'master'
+
+$ git merge --no-ff -m "merge with no-ff" dev	# 这里把dev合并了
+
+$ git log --graph --pretty=oneline --abbrev-commit 	#通过log看到dev处的提交
+*   e1e9c68 (HEAD -> master) merge with no-ff
+|\  
+| * f52c633 (dev) add merge
+|/  
+*   cf810e4 conflict fixed
+
+$ git branch	# 可以看到dev分支还是存在的
+  dev
+* master
+```
+
+​	**分支策略**：master通常都是非常稳定的，用来发布新版本。通常干活都在dev分支上。
+
+### 4.4 Bug分支
+
+​	Bug是软件开发过程中的常事。在GIt中每一个Bug都可以通过一个新的临时分支来修复，修复后，合并分支，然后把临时分支删除。
+
+​	场景：想要修复bug（从master上分支一个bug分支），但发现分支dev上进行的工作还没有提交
+
+​	没关系，用`git stash`命令，可以保存dev现场
+
+```vb
+$ git stash
+Saved working directory and index state WIP on dev: f52c633 add merge
+
+$ git status	# 是干净的~！
+On branch dev
+nothing to commit, working tree clean
+```
+
+​	然后切回到master，并从master创建临时分支修改Bug：
+
+```vb
+$ git checkout master
+Switched to branch 'master'
+Your branch is ahead of 'origin/master' by 6 commits.
+  (use "git push" to publish your local commits)
+
+$ git checkout -b issue-101
+Switched to a new branch 'issue-101'
+```
+
+​	对其进行修改以后就可以进行提交：
+
+```vb
+$ git add readme.txt 
+$ git commit -m "fix bug 101"
+[issue-101 4c805e2] fix bug 101
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+​	切回master，完成合并，最后删除`issue-101`:
+
+```vb
+$ git checkout master
+Switched to branch 'master'
+Your branch is ahead of 'origin/master' by 6 commits.
+  (use "git push" to publish your local commits)
+
+$ git merge --no-ff -m "merged bug fix 101" issue-101
+Merge made by the 'recursive' strategy.
+ readme.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+$ git branch -d issue-101
+Deleted branch issue-101 (was 7f8fb80).
+```
+
+​	修复完Bug后就可以切回dev,，检查状态。
+
+```vb
+$ git checkout dev
+Switched to branch 'dev'
+
+$ git status
+On branch dev
+nothing to commit, working tree clean	# 状态是干净的
+```
+
+​	发现状态是干净的，需要看储存状态里有没有：
+
+```vb
+$ git stash list
+stash@{0}: WIP on dev: f52c633 add merge
+```
+
+​	需要将工作现场恢复。有两个办法：
+
+​	`git stash apply`: 可以恢复，但stash list中还仍然保存着。需要用`git stash drop`来删除。
+
+​	`git stash pop` : 回复的同时把stash内容也删除。
+
+​	`git stash apply stash@{0}`：另外一种使用
